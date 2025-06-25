@@ -10,23 +10,34 @@
     <div class="container">
         <h1>Dinner Roulette</h1>
 
+        <div class="roulette-section">
+            <h2>What's for Dinner?</h2>
+            <div class="roulette-wrapper">
+                <div class="roulette-wheel" id="rouletteWheel">
+                    <div class="segment" style="--i: 0;"></div>
+                    <div class="segment" style="--i: 1;"></div>
+                    <div class="segment" style="--i: 2;"></div>
+                    <div class="segment" style="--i: 3;"></div>
+                    <div class="segment" style="--i: 4;"></div>
+                    <div class="segment" style="--i: 5;"></div>
+                    <div class="segment" style="--i: 6;"></div>
+                    <div class="segment" style="--i: 7;"></div>
+                    <div class="arrow"></div>
+                </div>
+            </div>
+            <p id="chosenFoodDisplay" class="chosen-food-display">Click 'Spin' to find out!</p>
+            <button id="spinBtn">Spin the Wheel!</button>
+        </div>
+
         <div class="options-section">
-            <h2>Your Dinner Options</h2>
+            <h2>Dinner Options</h2>
             <div class="input-group">
                 <input type="text" id="newOptionInput" placeholder="Add a new dinner idea">
-                <button id="addOptionBtn">Add Option</button>
+                <button id="addOptionBtn" class="small-btn">Add</button>
             </div>
             <ul id="optionsList">
                 </ul>
-        </div>
-
-        <div class="roulette-section">
-            <h2>What's for Dinner?</h2>
-            <div class="roulette-wheel">
-                <p id="chosenFoodDisplay">Click 'Spin' to find out!</p>
-            </div>
-            <button id="spinBtn">Spin the Wheel!</button>
-            <button id="resetBtn" class="hidden">Reset Options</button>
+            <button id="resetBtn" class="hidden small-btn">Reset Options</button>
         </div>
     </div>
 
