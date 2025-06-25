@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dinner Roulette</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Dinner Roulette</h1>
+
+        <div class="options-section">
+            <h2>Your Dinner Options</h2>
+            <div class="input-group">
+                <input type="text" id="newOptionInput" placeholder="Add a new dinner idea">
+                <button id="addOptionBtn">Add Option</button>
+            </div>
+            <ul id="optionsList">
+                </ul>
+        </div>
+
+        <div class="roulette-section">
+            <h2>What's for Dinner?</h2>
+            <div class="roulette-wheel">
+                <p id="chosenFoodDisplay">Click 'Spin' to find out!</p>
+            </div>
+            <button id="spinBtn">Spin the Wheel!</button>
+            <button id="resetBtn" class="hidden">Reset Options</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
