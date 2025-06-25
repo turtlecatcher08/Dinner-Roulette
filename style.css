@@ -5,7 +5,7 @@ body {
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    background: linear-gradient(135deg, #f0f8ff, #add8e6); /* Light blue gradient */
+    background: linear-gradient(135deg, #f0f8ff, #add8e6);
     color: #333;
     padding: 20px;
     box-sizing: border-box;
@@ -15,70 +15,119 @@ body {
     background-color: #fff;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    padding: 40px;
+    padding: 30px; /* Slightly reduced padding */
     width: 100%;
     max-width: 700px;
     text-align: center;
     box-sizing: border-box;
-    overflow: hidden; /* To contain potential animations */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column; /* Arrange sections vertically */
+    align-items: center; /* Center content horizontally */
 }
 
 h1 {
     color: #007bff;
-    margin-bottom: 30px;
-    font-size: 2.5em;
+    margin-bottom: 20px; /* Reduced margin */
+    font-size: 2.2em; /* Slightly smaller font */
     font-weight: 700;
 }
 
 h2 {
     color: #555;
-    margin-top: 30px;
-    margin-bottom: 20px;
-    font-size: 1.8em;
+    margin-top: 20px; /* Reduced margin */
+    margin-bottom: 15px; /* Reduced margin */
+    font-size: 1.6em; /* Slightly smaller font */
 }
 
-.options-section, .roulette-section {
-    margin-bottom: 40px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 25px;
-    background-color: #f9f9f9;
-}
-
-.input-group {
+.roulette-section {
+    margin-bottom: 30px;
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    flex-direction: column;
+    align-items: center;
+}
+
+.roulette-wrapper {
+    position: relative;
+    width: 200px; /* Smaller roulette */
+    height: 200px;
+    margin: 20px auto;
+}
+
+.roulette-wheel {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    transition: transform 5s ease-out; /* Smoother, longer spin */
+    position: relative;
+    background-color: #eee;
+    overflow: hidden;
+}
+
+.segment {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    clip-path: polygon(50% 50%, 50% 0%, calc(50% + 86.6% * cos(calc(var(--i) * 45deg + 22.5deg))) calc(50% + 86.6% * sin(calc(var(--i) * 45deg + 22.5deg)))); /* 8 segments */
+    transform-origin: 50% 50%;
+    display: flex;
     justify-content: center;
+    align-items: center;
+    font-size: 0.8em;
+    user-select: none;
 }
 
-input[type="text"] {
-    flex-grow: 1;
-    padding: 12px 15px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 1em;
-    outline: none;
-    transition: border-color 0.3s ease;
-    max-width: 300px; /* Limit input width */
+/* Define colors for segments (you can customize these) */
+.segment:nth-child(1) { background-color: #f44336; } /* Red */
+.segment:nth-child(2) { background-color: #2196f3; } /* Blue */
+.segment:nth-child(3) { background-color: #4caf50; } /* Green */
+.segment:nth-child(4) { background-color: #ff9800; } /* Orange */
+.segment:nth-child(5) { background-color: #9c27b0; } /* Purple */
+.segment:nth-child(6) { background-color: #00bcd4; } /* Cyan */
+.segment:nth-child(7) { background-color: #ffeb3b; } /* Yellow */
+.segment:nth-child(8) { background-color: #795548; } /* Brown */
+
+.arrow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) translateY(-calc(50% + 15px)) rotate(90deg); /* Adjust position */
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 20px solid #333;
+    z-index: 10;
 }
 
-input[type="text"]:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+.chosen-food-display {
+    margin-top: 15px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #007bff;
 }
 
 button {
     background-color: #007bff;
     color: white;
     border: none;
-    padding: 12px 25px;
+    padding: 10px 20px; /* Slightly smaller default button */
     border-radius: 6px;
     cursor: pointer;
     font-size: 1em;
     font-weight: bold;
     transition: background-color 0.3s ease, transform 0.1s ease;
-    white-space: nowrap; /* Prevent button text from wrapping */
+    white-space: nowrap;
+    margin-top: 10px; /* Add some margin to buttons */
+}
+
+button.small-btn {
+    padding: 8px 15px;
+    font-size: 0.9em;
+    margin-top: 5px;
 }
 
 button:hover {
@@ -95,24 +144,57 @@ button:disabled {
     cursor: not-allowed;
 }
 
+.options-section {
+    margin-bottom: 20px; /* Reduced margin */
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px; /* Smaller padding */
+    background-color: #f9f9f9;
+    width: 90%; /* Make options section slightly narrower */
+    box-sizing: border-box;
+}
+
+.input-group {
+    display: flex;
+    gap: 5px; /* Smaller gap */
+    margin-bottom: 10px; /* Reduced margin */
+    justify-content: center;
+}
+
+input#newOptionInput {
+    flex-grow: 1;
+    padding: 8px 10px; /* Smaller padding */
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.9em; /* Smaller font */
+    outline: none;
+    transition: border-color 0.3s ease;
+    max-width: 250px; /* Further limit input width */
+}
+
+input#newOptionInput:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+}
+
 #optionsList {
     list-style: none;
     padding: 0;
-    max-height: 250px; /* Max height for scrollable list */
-    overflow-y: auto; /* Enable scrolling */
+    max-height: 200px; /* Reduced max height */
+    overflow-y: auto;
     border: 1px solid #eee;
     border-radius: 6px;
     background-color: #fff;
-    margin-top: 15px;
+    margin-top: 10px; /* Reduced margin */
 }
 
 #optionsList li {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 15px;
+    padding: 8px 10px; /* Smaller padding */
     border-bottom: 1px solid #eee;
-    font-size: 1.1em;
+    font-size: 0.95em; /* Slightly smaller font */
     color: #444;
     transition: background-color 0.2s ease;
 }
@@ -129,71 +211,15 @@ button:disabled {
     background-color: #dc3545;
     color: white;
     border: none;
-    padding: 6px 10px;
+    padding: 4px 8px; /* Smaller remove button */
     border-radius: 4px;
     cursor: pointer;
-    font-size: 0.8em;
+    font-size: 0.7em;
     transition: background-color 0.2s ease;
 }
 
 .remove-btn:hover {
     background-color: #c82333;
-}
-
-.roulette-wheel {
-    background-color: #e9ecef;
-    border: 5px dashed #007bff;
-    border-radius: 50%;
-    width: 250px;
-    height: 250px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 30px auto;
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #007bff;
-    text-align: center;
-    box-shadow: inset 0 0 15px rgba(0, 123, 255, 0.3);
-    transition: transform 3s ease-out; /* For the spin animation */
-    /* Add a subtle animation for readiness */
-    animation: pulse 2s infinite alternate;
-}
-
-@keyframes pulse {
-    from {
-        transform: scale(1);
-    }
-    to {
-        transform: scale(1.02);
-    }
-}
-
-
-#chosenFoodDisplay {
-    margin: 0;
-    padding: 10px;
-    word-break: break-word; /* Allow long words to break */
-}
-
-#spinBtn {
-    margin-top: 20px;
-    padding: 15px 40px;
-    font-size: 1.3em;
-    background-color: #28a745; /* Green for spin */
-}
-
-#spinBtn:hover {
-    background-color: #218838;
-}
-
-#resetBtn {
-    background-color: #6c757d; /* Grey for reset */
-    margin-left: 10px;
-}
-
-#resetBtn:hover {
-    background-color: #5a6268;
 }
 
 .hidden {
@@ -202,38 +228,44 @@ button:disabled {
 
 /* Spin animation class */
 .spinning {
-    animation: none; /* Remove pulse during spin */
-    transform: rotate(3600deg); /* Spin multiple times */
-    transition: transform 3s ease-out; /* Duration of the spin */
+    animation: none; /* Remove any static animation */
+    transform: rotate(calc(360deg * 5)); /* Rotate multiple times */
+    transition: transform 5s cubic-bezier(0.1, 0.7, 1.0, 0.1); /* More natural stop */
 }
 
-/* Responsive design */
+.selected-option {
+    background-color: #e6f7ff !important; /* Highlight the selected option */
+}
+
+/* Responsive adjustments */
 @media (max-width: 600px) {
     .container {
-        padding: 20px;
+        padding: 15px;
     }
     h1 {
-        font-size: 2em;
+        font-size: 1.8em;
     }
     h2 {
-        font-size: 1.5em;
+        font-size: 1.4em;
+    }
+    .roulette-wrapper {
+        width: 160px;
+        height: 160px;
+        margin: 15px auto;
+    }
+    .arrow {
+        border-left-width: 8px;
+        border-right-width: 8px;
+        border-top-width: 16px;
+    }
+    button {
+        padding: 8px 15px;
+        font-size: 0.9em;
     }
     .input-group {
         flex-direction: column;
-        gap: 15px;
     }
-    input[type="text"] {
+    input#newOptionInput {
         max-width: 100%;
-    }
-    button {
-        width: 100%;
-    }
-    #spinBtn {
-        padding: 12px 30px;
-        font-size: 1.1em;
-    }
-    #resetBtn {
-        margin-top: 10px;
-        margin-left: 0;
     }
 }
