@@ -45,77 +45,101 @@ h2 {
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%; /* Ensure it can center the roulette */
 }
 
 .roulette-wrapper {
     position: relative;
-    width: 200px;
-    height: 200px;
+    width: 280px; /* Larger wheel */
+    height: 280px;
     margin: 20px auto;
+    border-radius: 50%;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    border: 5px solid #333; /* Outer rim */
+    background-color: #fff; /* Fallback */
+    overflow: hidden; /* Crucial for clipping segments */
 }
 
 .roulette-wheel {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    border: 2px solid #007bff; /* Added solid border for visibility */
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-    transition: transform 5s ease-out;
     position: relative;
-    background-color: #fff; /* Set a default background */
-    overflow: hidden; /* Crucial for clipping segments */
+    transition: transform 5s cubic-bezier(0.1, 0.7, 1.0, 0.1); /* Smoother, longer spin */
+    background: conic-gradient(
+        #f44336 0% 12.5%, /* Red */
+        #2196f3 12.5% 25%, /* Blue */
+        #4caf50 25% 37.5%, /* Green */
+        #ffeb3b 37.5% 50%, /* Yellow */
+        #9c27b0 50% 62.5%, /* Purple */
+        #00bcd4 62.5% 75%, /* Cyan */
+        #ff9800 75% 87.5%, /* Orange */
+        #795548 87.5% 100% /* Brown */
+        /* These default values will be overridden by JS for dynamic segment counts */
+    );
+    border: 3px solid #000; /* Inner border of the wheel */
+    box-sizing: border-box; /* Include padding/border in element's total width and height */
 }
 
-.segment {
+.segment-text {
     position: absolute;
     top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    transform-origin: 50% 50%;
+    left: 50%;
+    transform-origin: bottom center; /* Rotate around the bottom center */
+    width: 50%; /* Each text div takes half the wheel width */
+    height: 50%; /* Each text div takes half the wheel height */
+    text-align: center;
     display: flex;
+    align-items: flex-start; /* Align text to the top of its rotated segment */
     justify-content: center;
-    align-items: center;
-    font-size: 0.8em;
-    user-select: none;
-    /* The clip-path and background-color will be set by JavaScript */
+    padding-top: 15px; /* Adjust text position from center */
+    font-weight: bold;
+    color: #fff; /* White text on segments */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    box-sizing: border-box;
+    pointer-events: none; /* Allows clicks to pass through to the wheel if needed */
 }
 
-/* Define some default colors for segments. JavaScript will assign these,
-   or cycle through them if there are more options than colors defined here. */
-.segment:nth-child(1) { background-color: #f44336; } /* Red */
-.segment:nth-child(2) { background-color: #2196f3; } /* Blue */
-.segment:nth-child(3) { background-color: #4caf50; } /* Green */
-.segment:nth-child(4) { background-color: #ff9800; } /* Orange */
-.segment:nth-child(5) { background-color: #9c27b0; } /* Purple */
-.segment:nth-child(6) { background-color: #00bcd4; } /* Cyan */
-.segment:nth-child(7) { background-color: #ffeb3b; } /* Yellow */
-.segment:nth-child(8) { background-color: #795548; } /* Brown */
-.segment:nth-child(9) { background-color: #e91e63; } /* Pink */
-.segment:nth-child(10) { background-color: #607d8b; } /* Blue Grey */
-.segment:nth-child(11) { background-color: #ffc107; } /* Amber */
-.segment:nth-child(12) { background-color: #8bc34a; } /* Light Green */
+/* Adjust text color for light segments for better contrast */
+.segment-text.light-bg {
+    color: #333;
+    text-shadow: none;
+}
 
 
 .arrow {
     position: absolute;
-    top: 50%;
+    top: -20px; /* Position above the wheel */
     left: 50%;
-    transform: translate(-50%, -50%) translateY(-calc(50% + 10px)) rotate(90deg); /* Positioned above the wheel */
+    transform: translateX(-50%);
     width: 0;
     height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 15px solid #333; /* Color of the arrow */
-    z-index: 10; /* Ensures it's on top of the wheel */
+    border-left: 15px solid transparent; /* Wider arrow */
+    border-right: 15px solid transparent;
+    border-top: 25px solid #333; /* Taller arrow */
+    z-index: 100; /* Ensure it's on top of everything */
+}
+
+.center-pin {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px; /* Size of the center pin */
+    height: 30px;
+    background-color: #333; /* Color of the pin */
+    border-radius: 50%;
+    border: 2px solid #555;
+    z-index: 50; /* Above segments, below arrow */
 }
 
 .chosen-food-display {
     margin-top: 15px;
-    font-size: 1.2em;
+    font-size: 1.4em; /* Slightly larger result text */
     font-weight: bold;
     color: #007bff;
-    min-height: 1.5em; /* Ensure space even when empty */
+    min-height: 1.5em;
+    transition: color 0.3s ease; /* Smooth color transition */
 }
 
 button {
@@ -130,6 +154,15 @@ button {
     transition: background-color 0.3s ease, transform 0.1s ease;
     white-space: nowrap;
     margin-top: 10px;
+}
+
+#spinBtn {
+    background-color: #28a745; /* Green for spin */
+    font-size: 1.2em; /* Make spin button a bit larger */
+    padding: 12px 25px;
+}
+#spinBtn:hover {
+    background-color: #218838;
 }
 
 button.small-btn {
@@ -159,6 +192,7 @@ button:disabled {
     padding: 15px;
     background-color: #f9f9f9;
     width: 90%;
+    max-width: 400px; /* Constrain width of options section */
     box-sizing: border-box;
 }
 
@@ -219,36 +253,45 @@ input#newOptionInput:focus {
     background-color: #dc3545;
     color: white;
     border: none;
-    padding: 0; /* Remove padding to make it truly small */
-    border-radius: 50%; /* Make it circular */
+    padding: 0;
+    border-radius: 50%;
     cursor: pointer;
-    font-size: 0.9em; /* Larger 'x' */
-    line-height: 1; /* Adjust line height for vertical centering */
-    width: 22px; /* Fixed width for circular button */
-    height: 22px; /* Fixed height for circular button */
-    display: flex; /* Use flexbox to center 'x' */
+    font-size: 0.9em;
+    line-height: 1;
+    width: 22px;
+    height: 22px;
+    display: flex;
     justify-content: center;
     align-items: center;
     transition: background-color 0.2s ease;
-    font-weight: bold; /* Make the 'x' bold */
+    font-weight: bold;
 }
 
 .remove-btn:hover {
     background-color: #c82333;
 }
 
+#resetBtn {
+    background-color: #6c757d; /* Grey for reset */
+    margin-left: 10px;
+}
+#resetBtn:hover {
+    background-color: #5a6268;
+}
+
+
 .hidden {
     display: none;
 }
 
-/* Spin animation class */
+/* Spin animation class (only defines the transition, JS sets transform) */
 .spinning {
-    /* The actual transform is set by JS, but this transition defines its behavior */
-    transition: transform 5s cubic-bezier(0.1, 0.7, 1.0, 0.1); /* Slower start, quick stop */
+    /* Animation definition for spinning effect */
+    /* This class is added and removed by JS, triggering the CSS transition */
 }
 
 .selected-option {
-    background-color: #e6f7ff !important; /* Highlight the selected option */
+    background-color: #e6f7ff !important;
 }
 
 /* Responsive adjustments */
@@ -263,18 +306,27 @@ input#newOptionInput:focus {
         font-size: 1.4em;
     }
     .roulette-wrapper {
-        width: 160px;
-        height: 160px;
+        width: 220px; /* Adjust for smaller screens */
+        height: 220px;
         margin: 15px auto;
     }
     .arrow {
-        border-left-width: 8px;
-        border-right-width: 8px;
-        border-top-width: 16px;
+        border-left-width: 12px;
+        border-right-width: 12px;
+        border-top-width: 20px;
+        top: -15px;
+    }
+    .center-pin {
+        width: 25px;
+        height: 25px;
     }
     button {
         padding: 8px 15px;
         font-size: 0.9em;
+    }
+    #spinBtn {
+        font-size: 1.1em;
+        padding: 10px 20px;
     }
     .input-group {
         flex-direction: column;
@@ -282,4 +334,9 @@ input#newOptionInput:focus {
     input#newOptionInput {
         max-width: 100%;
     }
+    .options-section {
+        width: 100%;
+        max-width: none;
+    }
 }
+
