@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const spinBtn = document.getElementById('spinBtn');
     const resetBtn = document.getElementById('resetBtn');
     const chosenFoodDisplay = document.getElementById('chosenFoodDisplay');
-    const rouletteWheel = document.querySelector('.roulette-wheel');
+    const rouletteWheel = document.getElementById('rouletteWheel');
+    const rouletteWrapper = document.querySelector('.roulette-wrapper'); // Added
 
     // Load options from Local Storage or use default ones
     let foodOptions = JSON.parse(localStorage.getItem('dinnerOptions')) || [
@@ -24,12 +25,18 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('dinnerOptions', JSON.stringify(foodOptions));
     };
 
-    // Function to render the list of options
+    // Function to render the list of options AND the roulette segments
     const renderOptions = () => {
         optionsList.innerHTML = ''; // Clear existing list
+        rouletteWheel.innerHTML = ''; // Clear existing segments
+
         if (foodOptions.length === 0) {
             optionsList.innerHTML = '<li style="text-align: center; color: #888;">No options added yet. Add some!</li>';
+            // Optionally handle empty roulette visually
+            return;
         }
+
+        // Render options list
         foodOptions.forEach((option, index) => {
             const li = document.createElement('li');
             li.innerHTML = `
@@ -37,7 +44,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button class="remove-btn" data-index="${index}">Remove</button>
             `;
             optionsList.appendChild(li);
+
+            // Create roulette segments dynamically
+            const segment = document.createElement('div');
+            segment.classList.add('segment');
+            segment.style.setProperty('--i', index);
+            // You could add text to the segments if you have fewer options
+            // segment.textContent = option;
+            rouletteWheel.appendChild(segment);
+
+            // Update segment clipping for different numbers of options
+            const numSegments = foodOptions.length;
+            const angle = 360 / numSegments;
+            segment.style.clipPath = `polygon(50% 50%, 50% 0%, calc(50% + 86.6% * cos(calc(${index} * ${angle}deg + ${angle / 2}deg))) calc(50% + 86.6% * sin(calc(${index} * ${angle}deg + ${angle / 2}deg))))`;
         });
+
+        // Update the number of segments in CSS (optional, but can make styling easier)
+        rouletteWheel.style.setProperty('--segments', numSegments);
+
         updateSpinButtonState();
         updateResetButtonState();
     };
@@ -45,9 +69,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to add a new option
     const addOption = () => {
         const newOption = newOptionInput.value.trim();
-        if (newOption && !foodOptions.includes(newOption)) { // Prevent duplicates
+        if (newOption && !foodOptions.includes(newOption)) {
             foodOptions.push(newOption);
-            newOptionInput.value = ''; // Clear input field
+            newOptionInput.value = '';
             saveOptions();
             renderOptions();
         } else if (foodOptions.includes(newOption)) {
@@ -60,23 +84,19 @@ document.addEventListener('DOMContentLoaded', () => {
         foodOptions.splice(index, 1);
         saveOptions();
         renderOptions();
-        // If the currently displayed food was removed, reset display
         if (foodOptions.length === 0 || !foodOptions.includes(chosenFoodDisplay.textContent)) {
              chosenFoodDisplay.textContent = 'Click \'Spin\' to find out!';
         }
     };
 
-    // Handle adding option via button click
     addOptionBtn.addEventListener('click', addOption);
 
-    // Handle adding option via Enter key in input field
     newOptionInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             addOption();
         }
     });
 
-    // Handle removing options via event delegation on the list
     optionsList.addEventListener('click', (e) => {
         if (e.target.classList.contains('remove-btn')) {
             const indexToRemove = parseInt(e.target.dataset.index);
@@ -84,9 +104,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Function to update the disabled state of the spin button
     const updateSpinButtonState = () => {
-        spinBtn.disabled = foodOptions.length < 2; // Need at least 2 options to spin
+        spinBtn.disabled = foodOptions.length < 2;
         if (spinBtn.disabled) {
             spinBtn.title = "Add at least two options to spin the wheel.";
         } else {
@@ -94,7 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Function to update the visibility of the reset button
     const updateResetButtonState = () => {
         if (foodOptions.length > 0) {
             resetBtn.classList.remove('hidden');
@@ -103,53 +121,53 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Spin the wheel!
     spinBtn.addEventListener('click', () => {
         if (foodOptions.length < 2) {
             alert("Please add at least two dinner options to spin the wheel!");
             return;
         }
 
-        // Add spinning class for visual animation
-        rouletteWheel.classList.add('spinning');
-        spinBtn.disabled = true; // Disable button during spin
-        addOptionBtn.disabled = true; // Disable adding options during spin
+        const numSegments = foodOptions.length;
+        const rotationDegrees = 360 / numSegments;
+        const winningSegmentIndex = Math.floor(Math.random() * numSegments);
+        const spinAmount = 360 * 5 + winningSegmentIndex * rotationDegrees - rotationDegrees / 2; // Spin 5 times + land near the center of the winning segment
 
-        // Remove previous selected class
+        rouletteWheel.classList.add('spinning');
+        spinBtn.disabled = true;
+        addOptionBtn.disabled = true;
+
         const previousSelected = document.querySelector('.selected-option');
         if (previousSelected) {
             previousSelected.classList.remove('selected-option');
         }
 
-        // Simulate spin duration (matching CSS transition)
         setTimeout(() => {
-            const chosenFood = foodOptions[Math.floor(Math.random() * foodOptions.length)];
-            chosenFoodDisplay.textContent = chosenFood;
-            rouletteWheel.classList.remove('spinning'); // Remove spinning class
-            spinBtn.disabled = false; // Re-enable button
-            addOptionBtn.disabled = false; // Re-enable adding options
+            rouletteWheel.classList.remove('spinning');
+            spinBtn.disabled = false;
+            addOptionBtn.disabled = false;
 
-            // Highlight the chosen food in the list (optional, adds nice UX)
+            const chosenFood = foodOptions[(Math.floor(spinAmount / rotationDegrees)) % numSegments];
+            chosenFoodDisplay.textContent = chosenFood;
+
             const listItems = Array.from(optionsList.children);
             const chosenItem = listItems.find(li => li.querySelector('span').textContent === chosenFood);
             if (chosenItem) {
                 chosenItem.classList.add('selected-option');
-                chosenItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); // Scroll to it
+                chosenItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
-
-        }, 3000); // 3 seconds, matching CSS transition for spin
+        }, 5200); // Slightly longer than CSS transition
+        rouletteWheel.style.transform = `rotate(${spinAmount}deg)`;
     });
 
-    // Reset Options
     resetBtn.addEventListener('click', () => {
         if (confirm("Are you sure you want to clear all dinner options?")) {
             foodOptions = [];
             saveOptions();
             renderOptions();
             chosenFoodDisplay.textContent = 'Click \'Spin\' to find out!';
+            rouletteWheel.style.transform = `rotate(0deg)`; // Reset wheel visually
         }
     });
 
-    // Initial render when the page loads
-    renderOptions();
+    renderOptions(); // Initial render now creates roulette segments too
 });
